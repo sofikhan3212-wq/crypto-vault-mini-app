@@ -610,15 +610,96 @@ body{
 <section id="referralPage" class="page">
 
   <h1 class="page-title">Referral</h1>
-  <p class="page-subtitle">Invite friends to your community.</p>
+  <p class="page-subtitle">Invite friends and grow your community.</p>
 
   <div class="simple-card">
+
     <div class="big-icon">👥</div>
-    <h2>Referral System</h2>
-    <br>
-    <p>
-      Your referral system will be connected to the backend later.
+
+    <h2>Invite & Earn</h2>
+
+    <p style="margin-top:10px;">
+      Share your referral link with friends.
     </p>
+
+    <div style="
+      margin-top:25px;
+      background:#1d2938;
+      padding:15px;
+      border-radius:15px;
+      text-align:left;
+    ">
+
+      <div style="
+        color:#9ca3af;
+        font-size:13px;
+        margin-bottom:8px;
+      ">
+        Your Referral Link
+      </div>
+
+      <div id="referralLink"
+        style="
+          color:#f5b84b;
+          word-break:break-all;
+          font-size:14px;
+        ">
+        Loading...
+      </div>
+
+    </div>
+
+    <button onclick="copyReferral()"
+      style="
+        width:100%;
+        margin-top:15px;
+        padding:14px;
+        border:0;
+        border-radius:14px;
+        background:#f5b84b;
+        color:#111827;
+        font-size:16px;
+        font-weight:bold;
+      ">
+      📋 Copy Referral Link
+    </button>
+
+    <button onclick="shareReferral()"
+      style="
+        width:100%;
+        margin-top:10px;
+        padding:14px;
+        border:1px solid #3b4654;
+        border-radius:14px;
+        background:#1d2938;
+        color:white;
+        font-size:16px;
+        font-weight:bold;
+      ">
+      📤 Share Referral Link
+    </button>
+
+  </div>
+
+  <div style="
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    margin-top:20px;
+  ">
+
+    <div class="simple-card" style="padding:20px;">
+      <div style="font-size:30px;">👤</div>
+      <h2 id="refCount">0</h2>
+      <p>Invited Friends</p>
+    </div>
+
+    <div class="simple-card" style="padding:20px;">
+      <div style="font-size:30px;">⭐</div>
+      <h2 id="refBonus">0</h2>
+      <p>Referral Points</p>
+    </div>
+
   </div>
 
 </section>
@@ -745,7 +826,87 @@ body{
 const tg = window.Telegram?.WebApp;
 
 let currentPage = "home";
+/* REFERRAL SYSTEM */
 
+const BOT_USERNAME = "CryptoVaultBot";
+
+let referralCount =
+  parseInt(localStorage.getItem("cv_referralCount")) || 0;
+
+let referralBonus =
+  parseInt(localStorage.getItem("cv_referralBonus")) || 0;
+
+
+function createReferralLink(){
+
+  let userId = "user";
+
+  if(tg && tg.initDataUnsafe?.user){
+    userId = tg.initDataUnsafe.user.id;
+  }
+
+  const link =
+    "https://t.me/" +
+    BOT_USERNAME +
+    "?start=ref_" +
+    userId;
+
+  document.getElementById("referralLink").textContent = link;
+
+  document.getElementById("refCount").textContent =
+    referralCount;
+
+  document.getElementById("refBonus").textContent =
+    referralBonus;
+}
+
+
+function copyReferral(){
+
+  const link =
+    document.getElementById("referralLink").textContent;
+
+  navigator.clipboard.writeText(link).then(function(){
+
+    alert("Referral link copied!");
+
+  }).catch(function(){
+
+    alert("Copy failed. Please copy manually.");
+
+  });
+
+}
+
+
+function shareReferral(){
+
+  const link =
+    document.getElementById("referralLink").textContent;
+
+  const text =
+    "Join Crypto Vault using my referral link 👇";
+
+  const shareUrl =
+    "https://t.me/share/url?url=" +
+    encodeURIComponent(link) +
+    "&text=" +
+    encodeURIComponent(text);
+
+  if(tg && tg.openTelegramLink){
+
+    tg.openTelegramLink(shareUrl);
+
+  }else{
+
+    window.open(shareUrl,"_blank");
+
+  }
+
+}
+
+
+createReferralLink();
 
 /* TELEGRAM USER */
 if(tg){
