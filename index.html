@@ -1,878 +1,985 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <title>Crypto Vault</title>
-
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    :root {
-      --gold: #f5b84b;
-      --bg: #0d1117;
-      --card: #151c25;
-      --card2: #182432;
-      --border: #263441;
-      --text: #ffffff;
-      --muted: #8d98a8;
-    }
-
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    .app {
-      max-width: 520px;
-      margin: auto;
-      padding: 22px 16px 100px;
-    }
-
-    /* HEADER */
-
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 22px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-    }
-
-    .logo {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--gold);
-      color: #111;
-      font-weight: 800;
-      font-size: 17px;
-    }
-
-    .brand h1 {
-      font-size: 20px;
-      letter-spacing: .2px;
-    }
-
-    .brand p {
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .notification {
-      width: 42px;
-      height: 42px;
-      border-radius: 13px;
-      background: #171e27;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    /* PAGES */
-
-    .page {
-      display: none;
-    }
-
-    .page.active {
-      display: block;
-    }
-
-    /* HOME */
-
-    .welcome {
-      margin-bottom: 18px;
-    }
-
-    .welcome h2 {
-      font-size: 25px;
-      margin-bottom: 5px;
-    }
-
-    .welcome p {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .balance-card {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(145deg, #182432, #111923);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 22px;
-      margin-bottom: 18px;
-    }
-
-    .balance-card::after {
-      content: "";
-      position: absolute;
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      background: rgba(245,184,75,.07);
-      right: -45px;
-      top: -45px;
-    }
-
-    .balance-label {
-      color: #929eae;
-      font-size: 13px;
-      margin-bottom: 9px;
-    }
-
-    .balance {
-      font-size: 34px;
-      font-weight: 800;
-      letter-spacing: -.5px;
-    }
-
-    .balance span {
-      font-size: 15px;
-      color: #aeb8c5;
-      font-weight: 500;
-    }
-
-    .balance-footer {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid #273442;
-    }
-
-    .stat small {
-      display: block;
-      color: #7f8a9a;
-      font-size: 11px;
-      margin-bottom: 5px;
-    }
-
-    .stat strong {
-      font-size: 14px;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 24px 2px 12px;
-    }
-
-    .section-title h3 {
-      font-size: 17px;
-    }
-
-    .section-title span {
-      color: #7f8a9a;
-      font-size: 12px;
-    }
-
-    .menu {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 11px;
-    }
-
-    .menu-item {
-      border: 1px solid #222e3a;
-      background: #151c25;
-      border-radius: 17px;
-      padding: 17px 14px;
-      cursor: pointer;
-      transition: .15s;
-    }
-
-    .menu-item:active {
-      transform: scale(.97);
-      background: #1c2631;
-    }
-
-    .menu-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #1d2834;
-      font-size: 20px;
-      margin-bottom: 12px;
-    }
-
-    .menu-item h4 {
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-
-    .menu-item p {
-      color: #788596;
-      font-size: 11px;
-    }
-
-    /* PROFILE */
-
-    .profile-top {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .avatar {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      background: linear-gradient(145deg, #f5b84b, #d89525);
-      color: #111;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 14px;
-      font-size: 30px;
-      font-weight: 800;
-      border: 4px solid #202b36;
-    }
-
-    .profile-top h2 {
-      font-size: 22px;
-      margin-bottom: 5px;
-    }
-
-    .profile-top p {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .profile-card {
-      background: var(--card);
-      border: 1px solid #222e3a;
-      border-radius: 18px;
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-
-    .profile-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      border-bottom: 1px solid #222e3a;
-    }
-
-    .profile-row:last-child {
-      border-bottom: none;
-    }
-
-    .profile-label {
-      color: #7f8a9a;
-      font-size: 12px;
-    }
-
-    .profile-value {
-      max-width: 60%;
-      text-align: right;
-      font-size: 13px;
-      font-weight: 600;
-      word-break: break-word;
-    }
-
-    .profile-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .profile-stat {
-      background: var(--card);
-      border: 1px solid #222e3a;
-      border-radius: 16px;
-      padding: 15px 8px;
-      text-align: center;
-    }
-
-    .profile-stat strong {
-      display: block;
-      font-size: 17px;
-      margin-bottom: 5px;
-    }
-
-    .profile-stat span {
-      color: #7f8a9a;
-      font-size: 10px;
-    }
-
-    .demo-note {
-      background: rgba(245,184,75,.06);
-      border: 1px solid rgba(245,184,75,.18);
-      color: #aeb8c5;
-      border-radius: 15px;
-      padding: 13px;
-      font-size: 11px;
-      line-height: 1.5;
-      margin-top: 12px;
-    }
-
-    /* PLACEHOLDER PAGES */
-
-    .simple-page {
-      padding-top: 8px;
-    }
-
-    .page-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 22px;
-    }
-
-    .page-back {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 19px;
-      cursor: pointer;
-    }
-
-    .page-header h2 {
-      font-size: 21px;
-    }
-
-    .coming-card {
-      background: var(--card);
-      border: 1px solid #222e3a;
-      border-radius: 20px;
-      padding: 30px 20px;
-      text-align: center;
-    }
-
-    .coming-icon {
-      font-size: 40px;
-      margin-bottom: 15px;
-    }
-
-    .coming-card h3 {
-      margin-bottom: 8px;
-    }
-
-    .coming-card p {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    /* BOTTOM NAV */
-
-    .bottom-nav {
-      position: fixed;
-      left: 50%;
-      transform: translateX(-50%);
-      bottom: 10px;
-      width: calc(100% - 24px);
-      max-width: 496px;
-      background: rgba(20,27,36,.96);
-      border: 1px solid #293542;
-      border-radius: 20px;
-      padding: 9px 7px;
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      z-index: 50;
-      backdrop-filter: blur(12px);
-    }
-
-    .nav-item {
-      text-align: center;
-      color: #758293;
-      font-size: 10px;
-      cursor: pointer;
-      padding: 5px;
-    }
-
-    .nav-item .nav-icon {
-      display: block;
-      font-size: 19px;
-      margin-bottom: 3px;
-    }
-
-    .nav-item.active {
-      color: var(--gold);
-    }
-
-    /* TELEGRAM THEME */
-
-    body {
-      background: var(--tg-theme-bg-color, #0d1117);
-      color: var(--tg-theme-text-color, #fff);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Vault</title>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  background:#f7f8fa;
+  color:#111827;
+  padding-bottom:95px;
+}
+
+.page{
+  display:none;
+  padding:25px 20px;
+}
+
+.page.active{
+  display:block;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:28px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.logo{
+  width:56px;
+  height:56px;
+  border-radius:18px;
+  background:#f5b84b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:800;
+}
+
+.brand h2{
+  font-size:25px;
+}
+
+.brand p{
+  color:#9ca3af;
+  margin-top:4px;
+  font-size:15px;
+}
+
+.bell{
+  width:55px;
+  height:55px;
+  border-radius:18px;
+  background:#151e29;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+}
+
+/* WELCOME */
+.welcome h1{
+  font-size:36px;
+  margin-bottom:8px;
+}
+
+.welcome p{
+  color:#9ca3af;
+  font-size:18px;
+}
+
+/* BALANCE */
+.balance-card{
+  margin-top:34px;
+  background:#151e29;
+  color:white;
+  border-radius:28px;
+  padding:28px;
+  overflow:hidden;
+  position:relative;
+}
+
+.balance-card:after{
+  content:"";
+  position:absolute;
+  width:160px;
+  height:160px;
+  border-radius:50%;
+  background:rgba(245,184,75,.08);
+  right:-45px;
+  top:-65px;
+}
+
+.balance-label{
+  color:#aab3bf;
+  font-size:17px;
+}
+
+.balance-number{
+  margin-top:12px;
+  font-size:45px;
+  font-weight:800;
+  color:#f5b84b;
+}
+
+.points{
+  font-size:20px;
+  color:#d1d5db;
+  font-weight:500;
+}
+
+.balance-line{
+  height:1px;
+  background:#303b49;
+  margin:25px 0;
+}
+
+.balance-stats{
+  display:flex;
+  justify-content:space-between;
+}
+
+.stat span{
+  display:block;
+  color:#9ca3af;
+  font-size:15px;
+  margin-bottom:7px;
+}
+
+.stat strong{
+  color:#fff;
+  font-size:21px;
+}
+
+/* SECTION */
+.section-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:42px 4px 20px;
+}
+
+.section-title h2{
+  font-size:25px;
+}
+
+.section-title span{
+  color:#9ca3af;
+}
+
+/* QUICK ACCESS */
+.quick-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+}
+
+.quick-card{
+  background:#151e29;
+  color:white;
+  border-radius:25px;
+  padding:25px 20px;
+  min-height:170px;
+  cursor:pointer;
+}
+
+.quick-icon{
+  width:58px;
+  height:58px;
+  background:#1d2938;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:29px;
+  margin-bottom:22px;
+}
+
+.quick-card h3{
+  font-size:19px;
+  margin-bottom:8px;
+}
+
+.quick-card p{
+  color:#9ca3af;
+  font-size:14px;
+}
+
+/* PAGE TITLE */
+.page-title{
+  font-size:32px;
+  margin-bottom:8px;
+}
+
+.page-subtitle{
+  color:#9ca3af;
+  margin-bottom:25px;
+}
+
+/* TASKS */
+.task-card{
+  background:#151e29;
+  color:white;
+  border-radius:22px;
+  padding:20px;
+  margin-bottom:15px;
+}
+
+.task-top{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.task-icon{
+  width:52px;
+  height:52px;
+  border-radius:16px;
+  background:#1d2938;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+}
+
+.task-info{
+  flex:1;
+}
+
+.task-info h3{
+  font-size:17px;
+  margin-bottom:5px;
+}
+
+.task-info p{
+  color:#9ca3af;
+  font-size:13px;
+}
+
+.task-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:18px;
+}
+
+.reward{
+  color:#f5b84b;
+  font-weight:bold;
+}
+
+.task-btn{
+  border:0;
+  padding:10px 18px;
+  border-radius:12px;
+  background:#f5b84b;
+  color:#111827;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.task-btn.done{
+  background:#26313e;
+  color:#8d98a5;
+}
+
+/* PROFILE */
+.profile-card{
+  background:#151e29;
+  color:white;
+  border-radius:25px;
+  padding:25px;
+}
+
+.avatar{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:#f5b84b;
+  color:#111827;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+.profile-card h2{
+  font-size:25px;
+}
+
+.profile-card .username{
+  color:#9ca3af;
+  margin-top:5px;
+}
+
+.info-box{
+  margin-top:25px;
+}
+
+.info-row{
+  display:flex;
+  justify-content:space-between;
+  padding:14px 0;
+  border-bottom:1px solid #303b49;
+}
+
+.info-row span:first-child{
+  color:#9ca3af;
+}
+
+.info-row span:last-child{
+  font-weight:bold;
+}
+
+.demo-note{
+  margin-top:20px;
+  background:#fff7e6;
+  color:#76551d;
+  padding:15px;
+  border-radius:15px;
+  font-size:14px;
+}
+
+/* SIMPLE PAGE */
+.simple-card{
+  background:#151e29;
+  color:white;
+  padding:30px;
+  border-radius:25px;
+  text-align:center;
+}
+
+.simple-card .big-icon{
+  font-size:55px;
+  margin-bottom:15px;
+}
+
+.simple-card p{
+  color:#9ca3af;
+  line-height:1.6;
+}
+
+/* BOTTOM NAV */
+.bottom-nav{
+  position:fixed;
+  left:20px;
+  right:20px;
+  bottom:15px;
+  height:82px;
+  background:#151e29;
+  border:1px solid #303b49;
+  border-radius:27px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:100;
+}
+
+.nav-item{
+  width:25%;
+  text-align:center;
+  color:#8d98a5;
+  cursor:pointer;
+}
+
+.nav-icon{
+  font-size:25px;
+  margin-bottom:5px;
+}
+
+.nav-item span{
+  font-size:13px;
+}
+
+.nav-item.active{
+  color:#f5b84b;
+}
+
+/* DESKTOP */
+@media(min-width:700px){
+  body{
+    max-width:700px;
+    margin:auto;
+  }
+
+  .bottom-nav{
+    max-width:660px;
+    margin:auto;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<main class="app">
+<!-- HOME -->
+<section id="homePage" class="page active">
 
-  <!-- HOME PAGE -->
-  <section id="homePage" class="page active">
-
-    <header class="header">
-      <div class="brand">
-        <div class="logo">CV</div>
-
-        <div>
-          <h1>Crypto Vault</h1>
-          <p>Secure rewards platform</p>
-        </div>
+  <div class="header">
+    <div class="brand">
+      <div class="logo">CV</div>
+      <div>
+        <h2>Crypto Vault</h2>
+        <p>Secure rewards platform</p>
       </div>
-
-      <div class="notification" onclick="openPage('announcements')">
-        🔔
-      </div>
-    </header>
-
-    <section class="welcome">
-      <h2 id="welcomeText">Welcome 👋</h2>
-      <p>Manage your rewards and activities.</p>
-    </section>
-
-    <section class="balance-card">
-
-      <div class="balance-label">
-        Available Balance
-      </div>
-
-      <div class="balance">
-        1,250 <span>POINTS</span>
-      </div>
-
-      <div class="balance-footer">
-
-        <div class="stat">
-          <small>Total Earned</small>
-          <strong>2,000</strong>
-        </div>
-
-        <div class="stat">
-          <small>Total Withdrawn</small>
-          <strong>750</strong>
-        </div>
-
-      </div>
-
-    </section>
-
-    <div class="section-title">
-      <h3>Quick Access</h3>
-      <span>Explore</span>
     </div>
 
-    <section class="menu">
+    <div class="bell">🔔</div>
+  </div>
 
-      <div class="menu-item" onclick="openPage('tasks')">
-        <div class="menu-icon">🎯</div>
-        <h4>Tasks</h4>
-        <p>Earn more points</p>
-      </div>
+  <div class="welcome">
+    <h1 id="welcomeText">Welcome, User 👋</h1>
+    <p>Manage your rewards and activities.</p>
+  </div>
 
-      <div class="menu-item" onclick="openPage('giveaway')">
-        <div class="menu-icon">🎁</div>
-        <h4>Giveaway</h4>
-        <p>Join active events</p>
-      </div>
+  <div class="balance-card">
+    <div class="balance-label">Available Balance</div>
 
-      <div class="menu-item" onclick="openPage('referral')">
-        <div class="menu-icon">👥</div>
-        <h4>Referral</h4>
-        <p>Invite & earn</p>
-      </div>
-
-      <div class="menu-item" onclick="openPage('leaderboard')">
-        <div class="menu-icon">🏆</div>
-        <h4>Leaderboard</h4>
-        <p>Top earners</p>
-      </div>
-
-      <div class="menu-item" onclick="openPage('announcements')">
-        <div class="menu-icon">📢</div>
-        <h4>Announcements</h4>
-        <p>Latest updates</p>
-      </div>
-
-      <div class="menu-item" onclick="openPage('profile')">
-        <div class="menu-icon">👤</div>
-        <h4>My Profile</h4>
-        <p>Account details</p>
-      </div>
-
-    </section>
-
-  </section>
-
-
-  <!-- PROFILE PAGE -->
-  <section id="profilePage" class="page">
-
-    <div class="page-header">
-      <div class="page-back" onclick="openPage('home')">
-        ←
-      </div>
-
-      <h2>My Profile</h2>
+    <div>
+      <span id="balance" class="balance-number">1,250</span>
+      <span class="points">POINTS</span>
     </div>
 
-    <div class="profile-top">
+    <div class="balance-line"></div>
 
-      <div class="avatar" id="avatar">
-        U
+    <div class="balance-stats">
+      <div class="stat">
+        <span>Total Earned</span>
+        <strong id="totalEarned">2,000</strong>
       </div>
 
-      <h2 id="profileName">
-        User
-      </h2>
+      <div class="stat">
+        <span>Total Withdrawn</span>
+        <strong id="totalWithdrawn">750</strong>
+      </div>
+    </div>
+  </div>
 
-      <p id="profileUsername">
-        @username
-      </p>
+  <div class="section-title">
+    <h2>Quick Access</h2>
+    <span>Explore</span>
+  </div>
 
+  <div class="quick-grid">
+
+    <div class="quick-card" onclick="openPage('tasks')">
+      <div class="quick-icon">🎯</div>
+      <h3>Tasks</h3>
+      <p>Earn more points</p>
     </div>
 
+    <div class="quick-card" onclick="openPage('giveaway')">
+      <div class="quick-icon">🎁</div>
+      <h3>Giveaway</h3>
+      <p>Join active events</p>
+    </div>
 
-    <div class="profile-card">
+    <div class="quick-card" onclick="openPage('referral')">
+      <div class="quick-icon">👥</div>
+      <h3>Referral</h3>
+      <p>Invite & earn</p>
+    </div>
 
-      <div class="profile-row">
-        <div class="profile-label">First Name</div>
-        <div class="profile-value" id="firstName">
-          —
-        </div>
+    <div class="quick-card" onclick="openPage('leaderboard')">
+      <div class="quick-icon">🏆</div>
+      <h3>Leaderboard</h3>
+      <p>Top earners</p>
+    </div>
+
+    <div class="quick-card" onclick="openPage('announcements')">
+      <div class="quick-icon">📢</div>
+      <h3>Announcements</h3>
+      <p>Latest updates</p>
+    </div>
+
+    <div class="quick-card" onclick="openPage('profile')">
+      <div class="quick-icon">👤</div>
+      <h3>My Profile</h3>
+      <p>Your account</p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- TASKS -->
+<section id="tasksPage" class="page">
+
+  <h1 class="page-title">Tasks</h1>
+  <p class="page-subtitle">Complete tasks and claim demo points.</p>
+
+  <div class="task-card" id="task1">
+    <div class="task-top">
+      <div class="task-icon">📢</div>
+
+      <div class="task-info">
+        <h3>Check Announcements</h3>
+        <p>Open the announcements section.</p>
+      </div>
+    </div>
+
+    <div class="task-bottom">
+      <div class="reward">+100 POINTS</div>
+      <button class="task-btn" onclick="claimTask(1,100,this)">
+        Claim
+      </button>
+    </div>
+  </div>
+
+
+  <div class="task-card" id="task2">
+    <div class="task-top">
+      <div class="task-icon">👤</div>
+
+      <div class="task-info">
+        <h3>Visit Your Profile</h3>
+        <p>Check your Crypto Vault profile.</p>
+      </div>
+    </div>
+
+    <div class="task-bottom">
+      <div class="reward">+75 POINTS</div>
+      <button class="task-btn" onclick="claimTask(2,75,this)">
+        Claim
+      </button>
+    </div>
+  </div>
+
+
+  <div class="task-card" id="task3">
+    <div class="task-top">
+      <div class="task-icon">⭐</div>
+
+      <div class="task-info">
+        <h3>Daily Check-in</h3>
+        <p>Complete your daily demo check-in.</p>
+      </div>
+    </div>
+
+    <div class="task-bottom">
+      <div class="reward">+50 POINTS</div>
+      <button class="task-btn" onclick="claimTask(3,50,this)">
+        Claim
+      </button>
+    </div>
+  </div>
+
+
+  <div class="task-card" id="task4">
+    <div class="task-top">
+      <div class="task-icon">🎯</div>
+
+      <div class="task-info">
+        <h3>Explore Crypto Vault</h3>
+        <p>Explore the app and discover available sections.</p>
+      </div>
+    </div>
+
+    <div class="task-bottom">
+      <div class="reward">+125 POINTS</div>
+      <button class="task-btn" onclick="claimTask(4,125,this)">
+        Claim
+      </button>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- GIVEAWAY -->
+<section id="giveawayPage" class="page">
+
+  <h1 class="page-title">Giveaway</h1>
+  <p class="page-subtitle">Active events will appear here.</p>
+
+  <div class="simple-card">
+    <div class="big-icon">🎁</div>
+    <h2>Coming Soon</h2>
+    <br>
+    <p>
+      Giveaway events can be connected here later.
+    </p>
+  </div>
+
+</section>
+
+
+<!-- REFERRAL -->
+<section id="referralPage" class="page">
+
+  <h1 class="page-title">Referral</h1>
+  <p class="page-subtitle">Invite friends to your community.</p>
+
+  <div class="simple-card">
+    <div class="big-icon">👥</div>
+    <h2>Referral System</h2>
+    <br>
+    <p>
+      Your referral system will be connected to the backend later.
+    </p>
+  </div>
+
+</section>
+
+
+<!-- LEADERBOARD -->
+<section id="leaderboardPage" class="page">
+
+  <h1 class="page-title">Leaderboard</h1>
+  <p class="page-subtitle">Top earners will appear here.</p>
+
+  <div class="simple-card">
+    <div class="big-icon">🏆</div>
+    <h2>Leaderboard</h2>
+    <br>
+    <p>
+      Real user rankings require a database.
+    </p>
+  </div>
+
+</section>
+
+
+<!-- ANNOUNCEMENTS -->
+<section id="announcementsPage" class="page">
+
+  <h1 class="page-title">Announcements</h1>
+  <p class="page-subtitle">Latest Crypto Vault updates.</p>
+
+  <div class="simple-card">
+    <div class="big-icon">📢</div>
+    <h2>Welcome to Crypto Vault</h2>
+    <br>
+    <p>
+      More announcements will appear here.
+    </p>
+  </div>
+
+</section>
+
+
+<!-- PROFILE -->
+<section id="profilePage" class="page">
+
+  <h1 class="page-title">My Profile</h1>
+  <p class="page-subtitle">Your Telegram account information.</p>
+
+  <div class="profile-card">
+
+    <div class="avatar" id="avatar">U</div>
+
+    <h2 id="profileName">User</h2>
+    <div class="username" id="profileUsername">
+      Telegram User
+    </div>
+
+    <div class="info-box">
+
+      <div class="info-row">
+        <span>First Name</span>
+        <span id="firstName">—</span>
       </div>
 
-      <div class="profile-row">
-        <div class="profile-label">Last Name</div>
-        <div class="profile-value" id="lastName">
-          —
-        </div>
+      <div class="info-row">
+        <span>Last Name</span>
+        <span id="lastName">—</span>
       </div>
 
-      <div class="profile-row">
-        <div class="profile-label">Username</div>
-        <div class="profile-value" id="username">
-          —
-        </div>
+      <div class="info-row">
+        <span>Username</span>
+        <span id="username">—</span>
       </div>
 
-      <div class="profile-row">
-        <div class="profile-label">Telegram ID</div>
-        <div class="profile-value" id="telegramId">
-          —
-        </div>
+      <div class="info-row">
+        <span>Telegram ID</span>
+        <span id="telegramId">—</span>
+      </div>
+
+      <div class="info-row">
+        <span>Balance</span>
+        <span id="profileBalance">1,250</span>
       </div>
 
     </div>
-
-
-    <div class="profile-stats">
-
-      <div class="profile-stat">
-        <strong>1,250</strong>
-        <span>Points</span>
-      </div>
-
-      <div class="profile-stat">
-        <strong>2,000</strong>
-        <span>Earned</span>
-      </div>
-
-      <div class="profile-stat">
-        <strong>750</strong>
-        <span>Used</span>
-      </div>
-
-    </div>
-
 
     <div class="demo-note">
-      ℹ️ These points are currently demo data.
-      Real user balances and activity will be connected to a secure backend/database in a later step.
+      ℹ️ This is currently a demo points system.
+      Real balances require a secure backend and database.
     </div>
 
-  </section>
+  </div>
 
-
-  <!-- OTHER PAGES -->
-
-  <section id="tasksPage" class="page simple-page">
-
-    <div class="page-header">
-      <div class="page-back" onclick="openPage('home')">←</div>
-      <h2>Tasks</h2>
-    </div>
-
-    <div class="coming-card">
-      <div class="coming-icon">🎯</div>
-      <h3>Tasks</h3>
-      <p>Task system will be connected in the next step.</p>
-    </div>
-
-  </section>
-
-
-  <section id="giveawayPage" class="page simple-page">
-
-    <div class="page-header">
-      <div class="page-back" onclick="openPage('home')">←</div>
-      <h2>Giveaway</h2>
-    </div>
-
-    <div class="coming-card">
-      <div class="coming-icon">🎁</div>
-      <h3>Giveaway</h3>
-      <p>Giveaway section will be connected in the next step.</p>
-    </div>
-
-  </section>
-
-
-  <section id="referralPage" class="page simple-page">
-
-    <div class="page-header">
-      <div class="page-back" onclick="openPage('home')">←</div>
-      <h2>Referral</h2>
-    </div>
-
-    <div class="coming-card">
-      <div class="coming-icon">👥</div>
-      <h3>Referral</h3>
-      <p>Referral system will be connected in the next step.</p>
-    </div>
-
-  </section>
-
-
-  <section id="leaderboardPage" class="page simple-page">
-
-    <div class="page-header">
-      <div class="page-back" onclick="openPage('home')">←</div>
-      <h2>Leaderboard</h2>
-    </div>
-
-    <div class="coming-card">
-      <div class="coming-icon">🏆</div>
-      <h3>Leaderboard</h3>
-      <p>Leaderboard will be connected in the next step.</p>
-    </div>
-
-  </section>
-
-
-  <section id="announcementsPage" class="page simple-page">
-
-    <div class="page-header">
-      <div class="page-back" onclick="openPage('home')">←</div>
-      <h2>Announcements</h2>
-    </div>
-
-    <div class="coming-card">
-      <div class="coming-icon">📢</div>
-      <h3>Announcements</h3>
-      <p>Latest announcements will appear here.</p>
-    </div>
-
-  </section>
-
-
-</main>
+</section>
 
 
 <!-- BOTTOM NAV -->
-
-<nav class="bottom-nav">
+<div class="bottom-nav">
 
   <div class="nav-item active" onclick="openPage('home')">
-    <span class="nav-icon">⌂</span>
-    Home
+    <div class="nav-icon">⌂</div>
+    <span>Home</span>
   </div>
 
   <div class="nav-item" onclick="openPage('tasks')">
-    <span class="nav-icon">🎯</span>
-    Tasks
+    <div class="nav-icon">🎯</div>
+    <span>Tasks</span>
   </div>
 
   <div class="nav-item" onclick="openPage('referral')">
-    <span class="nav-icon">👥</span>
-    Referral
+    <div class="nav-icon">👥</div>
+    <span>Referral</span>
   </div>
 
   <div class="nav-item" onclick="openPage('profile')">
-    <span class="nav-icon">👤</span>
-    Profile
+    <div class="nav-icon">👤</div>
+    <span>Profile</span>
   </div>
 
-</nav>
+</div>
 
 
 <script>
 
-  const tg = window.Telegram?.WebApp;
+const tg = window.Telegram?.WebApp;
 
-  let currentPage = "home";
-
-
-  /* TELEGRAM INITIALIZATION */
-
-  if (tg) {
-
-    tg.ready();
-    tg.expand();
-
-    const user = tg.initDataUnsafe?.user;
-
-    if (user) {
-
-      const firstName = user.first_name || "User";
-      const lastName = user.last_name || "";
-      const username = user.username || "";
-      const id = user.id || "—";
-
-      /* HOME */
-
-      document.getElementById("welcomeText").textContent =
-        "Welcome, " + firstName + " 👋";
+let currentPage = "home";
 
 
-      /* PROFILE */
+/* TELEGRAM USER */
+if(tg){
 
-      document.getElementById("profileName").textContent =
-        (firstName + " " + lastName).trim();
+  tg.ready();
+  tg.expand();
 
-      document.getElementById("firstName").textContent =
-        firstName;
+  const user = tg.initDataUnsafe?.user;
 
-      document.getElementById("lastName").textContent =
-        lastName || "—";
+  if(user){
 
-      document.getElementById("username").textContent =
-        username ? "@" + username : "No username";
+    const firstName = user.first_name || "User";
+    const lastName = user.last_name || "";
+    const username = user.username || "";
+    const id = user.id || "—";
 
-      document.getElementById("profileUsername").textContent =
-        username ? "@" + username : "Telegram User";
+    document.getElementById("welcomeText").textContent =
+      "Welcome, " + firstName + " 👋";
 
-      document.getElementById("telegramId").textContent =
-        id;
+    document.getElementById("profileName").textContent =
+      (firstName + " " + lastName).trim();
+
+    document.getElementById("firstName").textContent =
+      firstName;
+
+    document.getElementById("lastName").textContent =
+      lastName || "—";
+
+    document.getElementById("username").textContent =
+      username ? "@" + username : "No username";
+
+    document.getElementById("profileUsername").textContent =
+      username ? "@" + username : "Telegram User";
+
+    document.getElementById("telegramId").textContent =
+      id;
+
+    document.getElementById("avatar").textContent =
+      firstName.charAt(0).toUpperCase();
+
+  }
+
+}
 
 
-      /* AVATAR INITIAL */
+/* LOAD SAVED DATA */
 
-      const initial =
-        firstName.charAt(0).toUpperCase();
+let balance =
+  parseInt(localStorage.getItem("cv_balance")) || 1250;
 
-      document.getElementById("avatar").textContent =
-        initial;
+let totalEarned =
+  parseInt(localStorage.getItem("cv_totalEarned")) || 2000;
+
+let completedTasks =
+  JSON.parse(localStorage.getItem("cv_completedTasks") || "[]");
+
+
+/* UPDATE BALANCE */
+
+function updateBalance(){
+
+  document.getElementById("balance").textContent =
+    balance.toLocaleString();
+
+  document.getElementById("totalEarned").textContent =
+    totalEarned.toLocaleString();
+
+  document.getElementById("profileBalance").textContent =
+    balance.toLocaleString();
+
+}
+
+
+/* SAVE DATA */
+
+function saveData(){
+
+  localStorage.setItem(
+    "cv_balance",
+    balance
+  );
+
+  localStorage.setItem(
+    "cv_totalEarned",
+    totalEarned
+  );
+
+  localStorage.setItem(
+    "cv_completedTasks",
+    JSON.stringify(completedTasks)
+  );
+
+}
+
+
+/* CLAIM TASK */
+
+function claimTask(taskId,reward,button){
+
+  if(completedTasks.includes(taskId)){
+
+    return;
+
+  }
+
+  balance += reward;
+
+  totalEarned += reward;
+
+  completedTasks.push(taskId);
+
+  saveData();
+
+  updateBalance();
+
+  button.textContent = "✓ Claimed";
+
+  button.classList.add("done");
+
+  button.disabled = true;
+
+}
+
+
+/* RESTORE COMPLETED TASKS */
+
+function restoreTasks(){
+
+  document.querySelectorAll(".task-card").forEach(function(card){
+
+    const button = card.querySelector(".task-btn");
+
+    if(!button) return;
+
+    const onclickText = button.getAttribute("onclick");
+
+    const match = onclickText.match(/claimTask\((\d+)/);
+
+    if(!match) return;
+
+    const taskId = parseInt(match[1]);
+
+    if(completedTasks.includes(taskId)){
+
+      button.textContent = "✓ Claimed";
+
+      button.classList.add("done");
+
+      button.disabled = true;
 
     }
+
+  });
+
+}
+
+
+/* PAGE SWITCH */
+
+function openPage(page){
+
+  currentPage = page;
+
+  document.querySelectorAll(".page").forEach(function(item){
+
+    item.classList.remove("active");
+
+  });
+
+
+  const selectedPage =
+    document.getElementById(page + "Page");
+
+  if(selectedPage){
+
+    selectedPage.classList.add("active");
 
   }
 
 
-  /* PAGE SYSTEM */
+  document.querySelectorAll(".nav-item").forEach(function(item){
 
-  function openPage(page) {
+    item.classList.remove("active");
 
-    currentPage = page;
-
-    const pages = document.querySelectorAll(".page");
-
-    pages.forEach(function(item) {
-      item.classList.remove("active");
-    });
+  });
 
 
-    const selectedPage =
-      document.getElementById(page + "Page");
+  if(page === "home")
+    document.querySelectorAll(".nav-item")[0].classList.add("active");
 
-    if (selectedPage) {
-      selectedPage.classList.add("active");
-    }
+  if(page === "tasks")
+    document.querySelectorAll(".nav-item")[1].classList.add("active");
 
+  if(page === "referral")
+    document.querySelectorAll(".nav-item")[2].classList.add("active");
 
-    /* BOTTOM NAV ACTIVE */
-
-    const navItems =
-      document.querySelectorAll(".nav-item");
-
-    navItems.forEach(function(item) {
-      item.classList.remove("active");
-    });
+  if(page === "profile")
+    document.querySelectorAll(".nav-item")[3].classList.add("active");
 
 
-    if (page === "home") {
-      navItems[0].classList.add("active");
-    }
+  if(tg && tg.BackButton){
 
-    if (page === "tasks") {
-      navItems[1].classList.add("active");
-    }
-
-    if (page === "referral") {
-      navItems[2].classList.add("active");
-    }
-
-    if (page === "profile") {
-      navItems[3].classList.add("active");
-    }
-
-
-    /* TELEGRAM BACK BUTTON */
-
-    if (tg && tg.BackButton) {
-
-      if (page === "home") {
-        tg.BackButton.hide();
-      } else {
-        tg.BackButton.show();
-      }
-
-    }
-
-    window.scrollTo(0, 0);
-  }
-
-
-  /* TELEGRAM BACK */
-
-  if (tg && tg.BackButton) {
-
-    tg.BackButton.onClick(function() {
-      openPage("home");
-    });
+    if(page === "home")
+      tg.BackButton.hide();
+    else
+      tg.BackButton.show();
 
   }
+
+  window.scrollTo(0,0);
+
+}
+
+
+/* TELEGRAM BACK BUTTON */
+
+if(tg && tg.BackButton){
+
+  tg.BackButton.onClick(function(){
+
+    openPage("home");
+
+  });
+
+}
+
+
+/* START */
+
+updateBalance();
+
+restoreTasks();
 
 </script>
 
 </body>
-  </html>
+</html>
