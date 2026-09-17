@@ -1113,3 +1113,89 @@ function loadTelegramProfile(){
 }
 
 loadTelegramProfile();
+/* PROFILE PICTURE */
+
+function loadProfilePicture(){
+
+  const picture =
+    document.getElementById("profilePicture");
+
+  if(!picture) return;
+
+  if(tg && tg.initDataUnsafe?.user){
+
+    const user =
+      tg.initDataUnsafe.user;
+
+    if(user.photo_url){
+
+      picture.src =
+        user.photo_url;
+
+    }
+
+  }
+
+}
+
+
+/* CHANGE PHOTO */
+
+function changeProfilePhoto(event){
+
+  const file =
+    event.target.files[0];
+
+  if(!file) return;
+
+  const reader =
+    new FileReader();
+
+  reader.onload = function(e){
+
+    const picture =
+      document.getElementById("profilePicture");
+
+    if(picture){
+
+      picture.src =
+        e.target.result;
+
+      localStorage.setItem(
+        "cv_profile_photo",
+        e.target.result
+      );
+
+    }
+
+  };
+
+  reader.readAsDataURL(file);
+
+}
+
+
+/* LOAD SAVED PHOTO */
+
+function restoreProfilePhoto(){
+
+  const saved =
+    localStorage.getItem("cv_profile_photo");
+
+  const picture =
+    document.getElementById("profilePicture");
+
+  if(saved && picture){
+
+    picture.src = saved;
+
+  }else{
+
+    loadProfilePicture();
+
+  }
+
+}
+
+
+restoreProfilePhoto();
