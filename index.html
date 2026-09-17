@@ -1,1153 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Crypto Vault</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
+
 *{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-  font-family:Arial,Helvetica,sans-serif;
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+    --bg:#07090d;
+    --card:#10141b;
+    --card2:#151a22;
+    --border:#242b35;
+    --gold:#f4bd55;
+    --gold2:#ffe2a0;
+    --white:#ffffff;
+    --muted:#8c95a3;
+    --green:#45d19b;
 }
 
 body{
-  background:#f7f8fa;
-  color:#111827;
-  padding-bottom:95px;
+    background:
+    radial-gradient(
+        circle at 50% -10%,
+        #202735 0%,
+        #0b0e13 35%,
+        #07090d 70%
+    );
+
+    color:var(--white);
+
+    font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+    min-height:100vh;
+    overflow-x:hidden;
 }
 
-.page{
-  display:none;
-  padding:25px 20px;
+button{
+    font-family:inherit;
 }
 
-.page.active{
-  display:block;
+.app{
+    width:100%;
+    max-width:520px;
+    margin:auto;
+    min-height:100vh;
+    padding-bottom:90px;
 }
 
-/* HEADER */
-.header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:28px;
+/* TOP BAR */
+
+.topbar{
+    height:76px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:15px 18px;
 }
 
 .brand{
-  display:flex;
-  align-items:center;
-  gap:14px;
+    display:flex;
+    align-items:center;
+    gap:11px;
 }
 
-.logo{
-  width:56px;
-  height:56px;
-  border-radius:18px;
-  background:#f5b84b;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-  font-weight:800;
+.brand-logo{
+    width:43px;
+    height:43px;
+
+    border-radius:14px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+    linear-gradient(
+        145deg,
+        #f8d98a,
+        #bd8427
+    );
+
+    color:#101010;
+
+    font-size:19px;
+    font-weight:900;
+
+    box-shadow:
+    0 6px 20px
+    rgba(244,189,85,.18);
 }
 
-.brand h2{
-  font-size:25px;
+.brand-text{
+    font-size:17px;
+    font-weight:800;
 }
 
-.brand p{
-  color:#9ca3af;
-  margin-top:4px;
-  font-size:15px;
+.brand-sub{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:2px;
 }
 
-.bell{
-  width:55px;
-  height:55px;
-  border-radius:18px;
-  background:#151e29;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:25px;
+.total-box{
+    text-align:right;
 }
 
-/* WELCOME */
-.welcome h1{
-  font-size:36px;
-  margin-bottom:8px;
+.total-label{
+    color:var(--muted);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
 }
 
-.welcome p{
-  color:#9ca3af;
-  font-size:18px;
+.total-value{
+    margin-top:3px;
+    font-size:17px;
+    font-weight:800;
+    color:var(--gold2);
 }
 
-/* BALANCE */
-.balance-card{
-  margin-top:34px;
-  background:#151e29;
-  color:white;
-  border-radius:28px;
-  padding:28px;
-  overflow:hidden;
-  position:relative;
+/* PAGE */
+
+.page{
+    display:none;
+    padding:0 18px;
 }
 
-.balance-card:after{
-  content:"";
-  position:absolute;
-  width:160px;
-  height:160px;
-  border-radius:50%;
-  background:rgba(245,184,75,.08);
-  right:-45px;
-  top:-65px;
+.page.active{
+    display:block;
 }
 
-.balance-label{
-  color:#aab3bf;
-  font-size:17px;
-}
+/* COMMON */
 
-.balance-number{
-  margin-top:12px;
-  font-size:45px;
-  font-weight:800;
-  color:#f5b84b;
-}
-
-.points{
-  font-size:20px;
-  color:#d1d5db;
-  font-weight:500;
-}
-
-.balance-line{
-  height:1px;
-  background:#303b49;
-  margin:25px 0;
-}
-
-.balance-stats{
-  display:flex;
-  justify-content:space-between;
-}
-
-.stat span{
-  display:block;
-  color:#9ca3af;
-  font-size:15px;
-  margin-bottom:7px;
-}
-
-.stat strong{
-  color:#fff;
-  font-size:21px;
-}
-
-/* SECTION */
-.section-title{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:42px 4px 20px;
-}
-
-.section-title h2{
-  font-size:25px;
-}
-
-.section-title span{
-  color:#9ca3af;
-}
-
-/* QUICK ACCESS */
-.quick-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
-}
-
-.quick-card{
-  background:#151e29;
-  color:white;
-  border-radius:25px;
-  padding:25px 20px;
-  min-height:170px;
-  cursor:pointer;
-}
-
-.quick-icon{
-  width:58px;
-  height:58px;
-  background:#1d2938;
-  border-radius:18px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:29px;
-  margin-bottom:22px;
-}
-
-.quick-card h3{
-  font-size:19px;
-  margin-bottom:8px;
-}
-
-.quick-card p{
-  color:#9ca3af;
-  font-size:14px;
-}
-
-/* PAGE TITLE */
 .page-title{
-  font-size:32px;
-  margin-bottom:8px;
+    font-size:25px;
+    font-weight:900;
+    margin-top:10px;
 }
 
 .page-subtitle{
-  color:#9ca3af;
-  margin-bottom:25px;
+    color:var(--muted);
+    font-size:12px;
+    margin-top:5px;
+    margin-bottom:18px;
 }
 
-/* TASKS */
-.task-card{
-  background:#151e29;
-  color:white;
-  border-radius:22px;
-  padding:20px;
-  margin-bottom:15px;
+.card{
+    background:
+    linear-gradient(
+        145deg,
+        #121720,
+        #0d1117
+    );
+
+    border:1px solid var(--border);
+
+    border-radius:19px;
+
+    padding:17px;
+
+    margin-bottom:12px;
 }
 
-.task-top{
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
-
-.task-icon{
-  width:52px;
-  height:52px;
-  border-radius:16px;
-  background:#1d2938;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:25px;
-}
-
-.task-info{
-  flex:1;
-}
-
-.task-info h3{
-  font-size:17px;
-  margin-bottom:5px;
-}
-
-.task-info p{
-  color:#9ca3af;
-  font-size:13px;
-}
-
-.task-bottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-top:18px;
-}
-
-.reward{
-  color:#f5b84b;
-  font-weight:bold;
-}
-
-.task-btn{
-  border:0;
-  padding:10px 18px;
-  border-radius:12px;
-  background:#f5b84b;
-  color:#111827;
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.task-btn.done{
-  background:#26313e;
-  color:#8d98a5;
-}
-
-/* PROFILE */
-.profile-card{
-  background:#151e29;
-  color:white;
-  border-radius:25px;
-  padding:25px;
-}
-
-.avatar{
-  width:80px;
-  height:80px;
-  border-radius:50%;
-  background:#f5b84b;
-  color:#111827;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:34px;
-  font-weight:bold;
-  margin-bottom:15px;
-}
-
-.profile-card h2{
-  font-size:25px;
-}
-
-.profile-card .username{
-  color:#9ca3af;
-  margin-top:5px;
-}
-
-.info-box{
-  margin-top:25px;
-}
-
-.info-row{
-  display:flex;
-  justify-content:space-between;
-  padding:14px 0;
-  border-bottom:1px solid #303b49;
-}
-
-.info-row span:first-child{
-  color:#9ca3af;
-}
-
-.info-row span:last-child{
-  font-weight:bold;
-}
-
-.demo-note{
-  margin-top:20px;
-  background:#fff7e6;
-  color:#76551d;
-  padding:15px;
-  border-radius:15px;
-  font-size:14px;
-}
-
-/* SIMPLE PAGE */
-.simple-card{
-  background:#151e29;
-  color:white;
-  padding:30px;
-  border-radius:25px;
-  text-align:center;
-}
-
-.simple-card .big-icon{
-  font-size:55px;
-  margin-bottom:15px;
-}
-
-.simple-card p{
-  color:#9ca3af;
-  line-height:1.6;
+.section-title{
+    font-size:15px;
+    font-weight:800;
+    margin:4px 0 12px;
 }
 
 /* BOTTOM NAV */
+
 .bottom-nav{
-  position:fixed;
-  left:20px;
-  right:20px;
-  bottom:15px;
-  height:82px;
-  background:#151e29;
-  border:1px solid #303b49;
-  border-radius:27px;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  z-index:100;
+    position:fixed;
+
+    left:50%;
+    bottom:12px;
+
+    transform:translateX(-50%);
+
+    width:calc(100% - 28px);
+    max-width:492px;
+
+    height:67px;
+
+    background:
+    rgba(13,17,23,.96);
+
+    border:1px solid #29313b;
+
+    border-radius:22px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-around;
+
+    z-index:100;
+
+    box-shadow:
+    0 12px 35px
+    rgba(0,0,0,.45);
+
+    backdrop-filter:blur(16px);
 }
 
-.nav-item{
-  width:25%;
-  text-align:center;
-  color:#8d98a5;
-  cursor:pointer;
+.nav-btn{
+    width:25%;
+    height:100%;
+
+    border:0;
+    background:none;
+
+    color:#707987;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    gap:5px;
+
+    font-size:19px;
+
+    cursor:pointer;
 }
 
-.nav-icon{
-  font-size:25px;
-  margin-bottom:5px;
+.nav-label{
+    font-size:9px;
+    font-weight:700;
 }
 
-.nav-item span{
-  font-size:13px;
+.nav-btn.active{
+    color:var(--gold);
 }
 
-.nav-item.active{
-  color:#f5b84b;
-}
-
-/* DESKTOP */
-@media(min-width:700px){
-  body{
-    max-width:700px;
-    margin:auto;
-  }
-
-  .bottom-nav{
-    max-width:660px;
-    margin:auto;
-  }
-}
 </style>
+
 </head>
 
 <body>
 
-<!-- HOME -->
-<section id="homePage" class="page active">
-
-  <div class="header">
-    <div class="brand">
-      <div class="logo">CV</div>
-      <div>
-        <h2>Crypto Vault</h2>
-        <p>Secure rewards platform</p>
-      </div>
-    </div>
-
-    <div class="bell">🔔</div>
-  </div>
-
-  <div class="welcome">
-    <h1 id="welcomeText">Welcome, User 👋</h1>
-    <p>Manage your rewards and activities.</p>
-  </div>
-
-  <div class="balance-card">
-    <div class="balance-label">Available Balance</div>
-
-    <div>
-      <span id="balance" class="balance-number">1,250</span>
-      <span class="points">POINTS</span>
-    </div>
-
-    <div class="balance-line"></div>
-
-    <div class="balance-stats">
-      <div class="stat">
-        <span>Total Earned</span>
-        <strong id="totalEarned">2,000</strong>
-      </div>
-
-      <div class="stat">
-        <span>Total Withdrawn</span>
-        <strong id="totalWithdrawn">750</strong>
-      </div>
-    </div>
-  </div>
-
-  <div class="section-title">
-    <h2>Quick Access</h2>
-    <span>Explore</span>
-  </div>
-
-  <div class="quick-grid">
-
-    <div class="quick-card" onclick="openPage('tasks')">
-      <div class="quick-icon">🎯</div>
-      <h3>Tasks</h3>
-      <p>Earn more points</p>
-    </div>
-
-    <div class="quick-card" onclick="openPage('giveaway')">
-      <div class="quick-icon">🎁</div>
-      <h3>Giveaway</h3>
-      <p>Join active events</p>
-    </div>
-
-    <div class="quick-card" onclick="openPage('referral')">
-      <div class="quick-icon">👥</div>
-      <h3>Referral</h3>
-      <p>Invite & earn</p>
-    </div>
-
-    <div class="quick-card" onclick="openPage('leaderboard')">
-      <div class="quick-icon">🏆</div>
-      <h3>Leaderboard</h3>
-      <p>Top earners</p>
-    </div>
-
-    <div class="quick-card" onclick="openPage('announcements')">
-      <div class="quick-icon">📢</div>
-      <h3>Announcements</h3>
-      <p>Latest updates</p>
-    </div>
-
-    <div class="quick-card" onclick="openPage('profile')">
-      <div class="quick-icon">👤</div>
-      <h3>My Profile</h3>
-      <p>Your account</p>
-    </div>
-
-  </div>
-</section>
-
-
-<!-- TASKS -->
-<section id="tasksPage" class="page">
-
-  <h1 class="page-title">Tasks</h1>
-  <p class="page-subtitle">Complete tasks and claim demo points.</p>
-
-  <div class="task-card" id="task1">
-    <div class="task-top">
-      <div class="task-icon">📢</div>
-
-      <div class="task-info">
-        <h3>Check Announcements</h3>
-        <p>Open the announcements section.</p>
-      </div>
-    </div>
-
-    <div class="task-bottom">
-      <div class="reward">+100 POINTS</div>
-      <button class="task-btn" onclick="claimTask(1,100,this)">
-        Claim
-      </button>
-    </div>
-  </div>
-
-
-  <div class="task-card" id="task2">
-    <div class="task-top">
-      <div class="task-icon">👤</div>
-
-      <div class="task-info">
-        <h3>Visit Your Profile</h3>
-        <p>Check your Crypto Vault profile.</p>
-      </div>
-    </div>
-
-    <div class="task-bottom">
-      <div class="reward">+75 POINTS</div>
-      <button class="task-btn" onclick="claimTask(2,75,this)">
-        Claim
-      </button>
-    </div>
-  </div>
-
-
-  <div class="task-card" id="task3">
-    <div class="task-top">
-      <div class="task-icon">⭐</div>
-
-      <div class="task-info">
-        <h3>Daily Check-in</h3>
-        <p>Complete your daily demo check-in.</p>
-      </div>
-    </div>
-
-    <div class="task-bottom">
-      <div class="reward">+50 POINTS</div>
-      <button class="task-btn" onclick="claimTask(3,50,this)">
-        Claim
-      </button>
-    </div>
-  </div>
-
-
-  <div class="task-card" id="task4">
-    <div class="task-top">
-      <div class="task-icon">🎯</div>
-
-      <div class="task-info">
-        <h3>Explore Crypto Vault</h3>
-        <p>Explore the app and discover available sections.</p>
-      </div>
-    </div>
-
-    <div class="task-bottom">
-      <div class="reward">+125 POINTS</div>
-      <button class="task-btn" onclick="claimTask(4,125,this)">
-        Claim
-      </button>
-    </div>
-  </div>
-
-</section>
-
-
-<!-- GIVEAWAY -->
-<section id="giveawayPage" class="page">
-
-  <h1 class="page-title">Giveaway</h1>
-  <p class="page-subtitle">Active events will appear here.</p>
-
-  <div class="simple-card">
-    <div class="big-icon">🎁</div>
-    <h2>Coming Soon</h2>
-    <br>
-    <p>
-      Giveaway events can be connected here later.
-    </p>
-  </div>
-
-</section>
-
-
-<!-- REFERRAL -->
-<section id="referralPage" class="page">
-
-  <h1 class="page-title">Referral</h1>
-  <p class="page-subtitle">Invite friends and grow your community.</p>
-
-  <div class="simple-card">
-
-    <div class="big-icon">👥</div>
-
-    <h2>Invite & Earn</h2>
-
-    <p style="margin-top:10px;">
-      Share your referral link with friends.
-    </p>
-
-    <div style="
-      margin-top:25px;
-      background:#1d2938;
-      padding:15px;
-      border-radius:15px;
-      text-align:left;
-    ">
-
-      <div style="
-        color:#9ca3af;
-        font-size:13px;
-        margin-bottom:8px;
-      ">
-        Your Referral Link
-      </div>
-
-      <div id="referralLink"
-        style="
-          color:#f5b84b;
-          word-break:break-all;
-          font-size:14px;
-        ">
-        Loading...
-      </div>
-
-    </div>
-
-    <button onclick="copyReferral()"
-      style="
-        width:100%;
-        margin-top:15px;
-        padding:14px;
-        border:0;
-        border-radius:14px;
-        background:#f5b84b;
-        color:#111827;
-        font-size:16px;
-        font-weight:bold;
-      ">
-      📋 Copy Referral Link
-    </button>
-
-    <button onclick="shareReferral()"
-      style="
-        width:100%;
-        margin-top:10px;
-        padding:14px;
-        border:1px solid #3b4654;
-        border-radius:14px;
-        background:#1d2938;
-        color:white;
-        font-size:16px;
-        font-weight:bold;
-      ">
-      📤 Share Referral Link
-    </button>
-
-  </div>
-
-  <div style="
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:15px;
-    margin-top:20px;
-  ">
-
-    <div class="simple-card" style="padding:20px;">
-      <div style="font-size:30px;">👤</div>
-      <h2 id="refCount">0</h2>
-      <p>Invited Friends</p>
-    </div>
-
-    <div class="simple-card" style="padding:20px;">
-      <div style="font-size:30px;">⭐</div>
-      <h2 id="refBonus">0</h2>
-      <p>Referral Points</p>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- LEADERBOARD -->
-<section id="leaderboardPage" class="page">
-
-  <h1 class="page-title">Leaderboard</h1>
-  <p class="page-subtitle">Top earners will appear here.</p>
-
-  <div class="simple-card">
-    <div class="big-icon">🏆</div>
-    <h2>Leaderboard</h2>
-    <br>
-    <p>
-      Real user rankings require a database.
-    </p>
-  </div>
-
-</section>
-
-
-<!-- ANNOUNCEMENTS -->
-<section id="announcementsPage" class="page">
-
-  <h1 class="page-title">Announcements</h1>
-  <p class="page-subtitle">Latest Crypto Vault updates.</p>
-
-  <div class="simple-card">
-    <div class="big-icon">📢</div>
-    <h2>Welcome to Crypto Vault</h2>
-    <br>
-    <p>
-      More announcements will appear here.
-    </p>
-  </div>
-
-</section>
-
-
-<!-- PROFILE -->
-<section id="profilePage" class="page">
-
-  <h1 class="page-title">My Profile</h1>
-  <p class="page-subtitle">Your Telegram account information.</p>
-
-  <div class="profile-card">
-
-    <div class="avatar" id="avatar">U</div>
-
-    <h2 id="profileName">User</h2>
-    <div class="username" id="profileUsername">
-      Telegram User
-    </div>
-
-    <div class="info-box">
-
-      <div class="info-row">
-        <span>First Name</span>
-        <span id="firstName">—</span>
-      </div>
-
-      <div class="info-row">
-        <span>Last Name</span>
-        <span id="lastName">—</span>
-      </div>
-
-      <div class="info-row">
-        <span>Username</span>
-        <span id="username">—</span>
-      </div>
-
-      <div class="info-row">
-        <span>Telegram ID</span>
-        <span id="telegramId">—</span>
-      </div>
-
-      <div class="info-row">
-        <span>Balance</span>
-        <span id="profileBalance">1,250</span>
-      </div>
-
-    </div>
-
-    <div class="demo-note">
-      ℹ️ This is currently a demo points system.
-      Real balances require a secure backend and database.
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-
-  <div class="nav-item active" onclick="openPage('home')">
-    <div class="nav-icon">⌂</div>
-    <span>Home</span>
-  </div>
-
-  <div class="nav-item" onclick="openPage('tasks')">
-    <div class="nav-icon">🎯</div>
-    <span>Tasks</span>
-  </div>
-
-  <div class="nav-item" onclick="openPage('referral')">
-    <div class="nav-icon">👥</div>
-    <span>Referral</span>
-  </div>
-
-  <div class="nav-item" onclick="openPage('profile')">
-    <div class="nav-icon">👤</div>
-    <span>Profile</span>
-  </div>
-
-</div>
-
-
-<script>
-
-const tg = window.Telegram?.WebApp;
-const SUPABASE_URL = "https://xdprefpurtczzzobctfs.supabase.co";
-const SUPABASE_KEY ="sb_publishable_QgO-utGhetQzLidp-NU2Lg_PBAmpnGe";
-
-const supabase = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-let currentPage = "home";
-/* REFERRAL SYSTEM */
-
-const BOT_USERNAME = "CryptoVault247Bot";
-
-let referralCount =
-  parseInt(localStorage.getItem("cv_referralCount")) || 0;
-
-let referralBonus =
-  parseInt(localStorage.getItem("cv_referralBonus")) || 0;
-
-
-function createReferralLink(){
-
-  let userId = "user";
-
-  if(tg && tg.initDataUnsafe?.user){
-    userId = tg.initDataUnsafe.user.id;
-  }
-
-  const link =
-    "https://t.me/" +
-    BOT_USERNAME +
-    "?start=ref_" +
-    userId;
-
-  document.getElementById("referralLink").textContent = link;
-
-  document.getElementById("refCount").textContent =
-    referralCount;
-
-  document.getElementById("refBonus").textContent =
-    referralBonus;
-}
-
-
-function copyReferral(){
-
-  const link =
-    document.getElementById("referralLink").textContent;
-
-  navigator.clipboard.writeText(link).then(function(){
-
-    alert("Referral link copied!");
-
-  }).catch(function(){
-
-    alert("Copy failed. Please copy manually.");
-
-  });
-
-}
-
-
-function shareReferral(){
-
-  const link =
-    document.getElementById("referralLink").textContent;
-
-  const text =
-    "Join Crypto Vault using my referral link 👇";
-
-  const shareUrl =
-    "https://t.me/share/url?url=" +
-    encodeURIComponent(link) +
-    "&text=" +
-    encodeURIComponent(text);
-
-  if(tg && tg.openTelegramLink){
-
-    tg.openTelegramLink(shareUrl);
-
-  }else{
-
-    window.open(shareUrl,"_blank");
-
-  }
-
-}
-
-
-createReferralLink();
-
-/* TELEGRAM USER */
-if(tg){
-
-  tg.ready();
-  tg.expand();
-
-  const user = tg.initDataUnsafe?.user;
-
-  if(user){
-
-    const firstName = user.first_name || "User";
-    const lastName = user.last_name || "";
-    const username = user.username || "";
-    const id = user.id || "—";
-
-    document.getElementById("welcomeText").textContent =
-      "Welcome, " + firstName + " 👋";
-
-    document.getElementById("profileName").textContent =
-      (firstName + " " + lastName).trim();
-
-    document.getElementById("firstName").textContent =
-      firstName;
-
-    document.getElementById("lastName").textContent =
-      lastName || "—";
-
-    document.getElementById("username").textContent =
-      username ? "@" + username : "No username";
-
-    document.getElementById("profileUsername").textContent =
-      username ? "@" + username : "Telegram User";
-
-    document.getElementById("telegramId").textContent =
-      id;
-
-    document.getElementById("avatar").textContent =
-      firstName.charAt(0).toUpperCase();
-
-  }
-
-}
-
-
-/* LOAD SAVED DATA */
-
-let balance =
-  parseInt(localStorage.getItem("cv_balance")) || 1250;
-
-let totalEarned =
-  parseInt(localStorage.getItem("cv_totalEarned")) || 2000;
-
-let completedTasks =
-  JSON.parse(localStorage.getItem("cv_completedTasks") || "[]");
-
-
-/* UPDATE BALANCE */
-
-function updateBalance(){
-
-  document.getElementById("balance").textContent =
-    balance.toLocaleString();
-
-  document.getElementById("totalEarned").textContent =
-    totalEarned.toLocaleString();
-
-  document.getElementById("profileBalance").textContent =
-    balance.toLocaleString();
-
-}
-
-
-/* SAVE DATA */
-
-function saveData(){
-
-  localStorage.setItem(
-    "cv_balance",
-    balance
-  );
-
-  localStorage.setItem(
-    "cv_totalEarned",
-    totalEarned
-  );
-
-  localStorage.setItem(
-    "cv_completedTasks",
-    JSON.stringify(completedTasks)
-  );
-
-}
-
-
-/* CLAIM TASK */
-
-function claimTask(taskId,reward,button){
-
-  if(completedTasks.includes(taskId)){
-
-    return;
-
-  }
-
-  balance += reward;
-
-  totalEarned += reward;
-
-  completedTasks.push(taskId);
-
-  saveData();
-
-  updateBalance();
-
-  button.textContent = "✓ Claimed";
-
-  button.classList.add("done");
-
-  button.disabled = true;
-
-}
-
-
-/* RESTORE COMPLETED TASKS */
-
-function restoreTasks(){
-
-  document.querySelectorAll(".task-card").forEach(function(card){
-
-    const button = card.querySelector(".task-btn");
-
-    if(!button) return;
-
-    const onclickText = button.getAttribute("onclick");
-
-    const match = onclickText.match(/claimTask\((\d+)/);
-
-    if(!match) return;
-
-    const taskId = parseInt(match[1]);
-
-    if(completedTasks.includes(taskId)){
-
-      button.textContent = "✓ Claimed";
-
-      button.classList.add("done");
-
-      button.disabled = true;
-
-    }
-
-  });
-
-}
-
-
-/* PAGE SWITCH */
-
-function openPage(page){
-
-  currentPage = page;
-
-  document.querySelectorAll(".page").forEach(function(item){
-
-    item.classList.remove("active");
-
-  });
-
-
-  const selectedPage =
-    document.getElementById(page + "Page");
-
-  if(selectedPage){
-
-    selectedPage.classList.add("active");
-
-  }
-
-
-  document.querySelectorAll(".nav-item").forEach(function(item){
-
-    item.classList.remove("active");
-
-  });
-
-
-  if(page === "home")
-    document.querySelectorAll(".nav-item")[0].classList.add("active");
-
-  if(page === "tasks")
-    document.querySelectorAll(".nav-item")[1].classList.add("active");
-
-  if(page === "referral")
-    document.querySelectorAll(".nav-item")[2].classList.add("active");
-
-  if(page === "profile")
-    document.querySelectorAll(".nav-item")[3].classList.add("active");
-
-
-  if(tg && tg.BackButton){
-
-    if(page === "home")
-      tg.BackButton.hide();
-    else
-      tg.BackButton.show();
-
-  }
-
-  window.scrollTo(0,0);
-
-}
-
-
-/* TELEGRAM BACK BUTTON */
-
-if(tg && tg.BackButton){
-
-  tg.BackButton.onClick(function(){
-
-    openPage("home");
-
-  });
-
-}
-
-
-/* START */
-
-updateBalance();
-
-restoreTasks();
-
-</script>
-
-</body>
-</html>
+<div class="app">
