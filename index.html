@@ -468,3 +468,93 @@ button{
     <div id="taskList"></div>
 
 </section>
+<!-- ================= REFERRAL ================= -->
+
+<section class="page" id="referral">
+
+    <div class="page-title">
+        Referral
+    </div>
+
+    <div class="page-subtitle">
+        Invite friends and track your referrals
+    </div>
+
+
+    <div class="ref-summary">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Total Referrals
+            </div>
+
+            <div class="stat-value" id="refCount">
+                0
+            </div>
+
+        </div>
+
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Referral Points
+            </div>
+
+            <div class="stat-value" id="refBonus">
+                0
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="section-title">
+            Your Referral Link
+        </div>
+
+        <div class="ref-link" id="referralLink">
+            Generating...
+        </div>
+
+
+        <div class="action-row">
+
+            <button
+            class="action-btn"
+            onclick="copyReferral()">
+                Copy Link
+            </button>
+
+            <button
+            class="action-btn primary"
+            onclick="shareReferral()">
+                Share
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="section-title">
+            People You Referred
+        </div>
+
+        <div id="referralUsers">
+
+            <div class="empty">
+                No referrals yet
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
