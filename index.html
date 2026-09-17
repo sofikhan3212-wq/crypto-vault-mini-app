@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Crypto Vault</title>
@@ -824,7 +825,13 @@ body{
 <script>
 
 const tg = window.Telegram?.WebApp;
+const SUPABASE_URL = "https://xdprefpurtczzzobctfs.supabase.co";
+const SUPABASE_KEY ="sb_publishable_QgO-utGhetQzLidp-NU2Lg_PBAmpnGe";
 
+const supabase = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 let currentPage = "home";
 /* REFERRAL SYSTEM */
 
