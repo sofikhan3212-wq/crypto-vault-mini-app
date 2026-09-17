@@ -1581,3 +1581,24 @@ function showToast(message){
   }, 2000);
 
     }
+/* COIN AUTO POINT */
+
+let coinTimer = null;
+
+function startCoinTimer(){
+
+  if(coinTimer) return;
+
+  coinTimer = setInterval(function(){
+
+    balance += 1;
+    earned += 1;
+
+    saveBalance();
+    updateBalance();
+
+  }, 60000);
+
+}
+
+startCoinTimer();
