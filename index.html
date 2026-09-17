@@ -1325,3 +1325,86 @@ function claimTask(taskId){
 }
 
 renderTasks();
+/* PAGE NAVIGATION */
+
+function openPage(page){
+
+  currentPage = page;
+
+  document
+    .querySelectorAll(".page")
+    .forEach(function(item){
+
+      item.classList.remove("active");
+
+    });
+
+
+  const selectedPage =
+    document.getElementById(page);
+
+  if(selectedPage){
+
+    selectedPage.classList.add("active");
+
+  }
+
+
+  /* NAV BUTTON ACTIVE */
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(function(btn){
+
+      btn.classList.remove("active");
+
+    });
+
+
+  const activeBtn =
+    document.querySelector(
+      '.nav-btn[data-page="' + page + '"]'
+    );
+
+  if(activeBtn){
+
+    activeBtn.classList.add("active");
+
+  }
+
+
+  /* TELEGRAM BACK BUTTON */
+
+  if(tg && tg.BackButton){
+
+    if(page === "home"){
+
+      tg.BackButton.hide();
+
+    }else{
+
+      tg.BackButton.show();
+
+    }
+
+  }
+
+}
+
+
+/* BACK BUTTON */
+
+if(tg && tg.BackButton){
+
+  tg.BackButton.onClick(function(){
+
+    openPage("home");
+
+  });
+
+}
+
+
+/* HOME */
+
+openPage("home");
