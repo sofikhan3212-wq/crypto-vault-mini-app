@@ -1199,3 +1199,129 @@ function restoreProfilePhoto(){
 
 
 restoreProfilePhoto();
+/* TASK SYSTEM */
+
+const tasks = [
+  {
+    id: 1,
+    title: "Check Announcements",
+    reward: 100
+  },
+  {
+    id: 2,
+    title: "Visit Your Profile",
+    reward: 75
+  },
+  {
+    id: 3,
+    title: "Daily Check-in",
+    reward: 50
+  },
+  {
+    id: 4,
+    title: "Explore Crypto Vault",
+    reward: 125
+  }
+];
+
+let completedTasks =
+  JSON.parse(
+    localStorage.getItem("cv_completedTasks")
+  ) || [];
+
+
+/* SAVE TASKS */
+
+function saveTasks(){
+
+  localStorage.setItem(
+    "cv_completedTasks",
+    JSON.stringify(completedTasks)
+  );
+
+}
+
+
+/* SHOW TASKS */
+
+function renderTasks(){
+
+  const list =
+    document.getElementById("taskList");
+
+  if(!list) return;
+
+  list.innerHTML = "";
+
+  tasks.forEach(function(task){
+
+    const done =
+      completedTasks.includes(task.id);
+
+    const card =
+      document.createElement("div");
+
+    card.className = "task-card";
+
+    card.innerHTML = `
+      <div class="task-icon">✓</div>
+
+      <div class="task-info">
+        <div class="task-title">
+          ${task.title}
+        </div>
+
+        <div class="task-reward">
+          +${task.reward} POINTS
+        </div>
+      </div>
+
+      <button
+        class="claim-btn ${done ? "done" : ""}"
+        onclick="claimTask(${task.id})"
+        ${done ? "disabled" : ""}
+      >
+        ${done ? "✓ Claimed" : "Claim"}
+      </button>
+    `;
+
+    list.appendChild(card);
+
+  });
+
+}
+
+
+/* CLAIM TASK */
+
+function claimTask(taskId){
+
+  if(completedTasks.includes(taskId)){
+    return;
+  }
+
+  const task =
+    tasks.find(function(item){
+      return item.id === taskId;
+    });
+
+  if(!task) return;
+
+  balance += task.reward;
+  earned += task.reward;
+
+  completedTasks.push(taskId);
+
+  saveBalance();
+  saveTasks();
+
+  updateBalance();
+  renderTasks();
+
+  showToast(
+    "+" + task.reward + " POINTS"
+  );
+
+}
+
+renderTasks();
