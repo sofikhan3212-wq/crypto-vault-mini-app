@@ -941,3 +941,70 @@ button{
 
 
 <script>
+/* TELEGRAM */
+
+const tg = window.Telegram?.WebApp;
+
+if(tg){
+  tg.ready();
+  tg.expand();
+}
+
+
+/* BALANCE DATA */
+
+let balance =
+  parseInt(localStorage.getItem("cv_balance")) || 1250;
+
+let earned =
+  parseInt(localStorage.getItem("cv_earned")) || 2000;
+
+
+/* SAVE DATA */
+
+function saveBalance(){
+
+  localStorage.setItem(
+    "cv_balance",
+    balance
+  );
+
+  localStorage.setItem(
+    "cv_earned",
+    earned
+  );
+
+}
+
+
+/* UPDATE BALANCE */
+
+function updateBalance(){
+
+  const top =
+    document.getElementById("topBalance");
+
+  const coin =
+    document.getElementById("coinBalance");
+
+  const profile =
+    document.getElementById("profileBalance");
+
+  if(top){
+    top.textContent =
+      balance.toLocaleString();
+  }
+
+  if(coin){
+    coin.textContent =
+      balance.toLocaleString();
+  }
+
+  if(profile){
+    profile.textContent =
+      balance.toLocaleString();
+  }
+
+}
+
+updateBalance();
