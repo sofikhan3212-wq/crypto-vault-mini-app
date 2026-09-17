@@ -1408,3 +1408,156 @@ if(tg && tg.BackButton){
 /* HOME */
 
 openPage("home");
+/* REFERRAL SYSTEM */
+
+const BOT_USERNAME = "CryptoVault247Bot";
+
+let referralCount =
+  parseInt(
+    localStorage.getItem("cv_referralCount")
+  ) || 0;
+
+let referralBonus =
+  parseInt(
+    localStorage.getItem("cv_referralBonus")
+  ) || 0;
+
+
+/* CREATE REFERRAL LINK */
+
+function createReferralLink(){
+
+  let userId = "user";
+
+  if(tg && tg.initDataUnsafe?.user){
+
+    userId =
+      tg.initDataUnsafe.user.id;
+
+  }
+
+  const link =
+    "https://t.me/" +
+    BOT_USERNAME +
+    "?start=ref_" +
+    userId;
+
+
+  const box =
+    document.getElementById(
+      "referralLink"
+    );
+
+  if(box){
+
+    box.textContent = link;
+
+  }
+
+
+  const count =
+    document.getElementById(
+      "refCount"
+    );
+
+  if(count){
+
+    count.textContent =
+      referralCount;
+
+  }
+
+
+  const bonus =
+    document.getElementById(
+      "refBonus"
+    );
+
+  if(bonus){
+
+    bonus.textContent =
+      referralBonus;
+
+  }
+
+}
+
+
+/* COPY */
+
+function copyReferral(){
+
+  const box =
+    document.getElementById(
+      "referralLink"
+    );
+
+  if(!box) return;
+
+  const link =
+    box.textContent;
+
+  navigator.clipboard
+    .writeText(link)
+    .then(function(){
+
+      showToast(
+        "Referral link copied!"
+      );
+
+    })
+    .catch(function(){
+
+      alert(
+        "Copy failed. Please copy manually."
+      );
+
+    });
+
+}
+
+
+/* SHARE */
+
+function shareReferral(){
+
+  const box =
+    document.getElementById(
+      "referralLink"
+    );
+
+  if(!box) return;
+
+  const link =
+    box.textContent;
+
+  const text =
+    "Join Crypto Vault using my referral link 👇";
+
+
+  const shareUrl =
+    "https://t.me/share/url?url=" +
+    encodeURIComponent(link) +
+    "&text=" +
+    encodeURIComponent(text);
+
+
+  if(tg && tg.openTelegramLink){
+
+    tg.openTelegramLink(
+      shareUrl
+    );
+
+  }else{
+
+    window.open(
+      shareUrl,
+      "_blank"
+    );
+
+  }
+
+}
+
+
+createReferralLink();
