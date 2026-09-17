@@ -1008,3 +1008,108 @@ function updateBalance(){
 }
 
 updateBalance();
+/* TELEGRAM PROFILE */
+
+function loadTelegramProfile(){
+
+  if(!tg || !tg.initDataUnsafe?.user){
+    return;
+  }
+
+  const user = tg.initDataUnsafe.user;
+
+  const firstName =
+    user.first_name || "";
+
+  const lastName =
+    user.last_name || "";
+
+  const fullName =
+    (firstName + " " + lastName).trim() || "Telegram User";
+
+  const username =
+    user.username ? "@" + user.username : "No username";
+
+  const userId =
+    user.id || "Unknown";
+
+
+  /* HOME NAME */
+
+  const homeName =
+    document.getElementById("homeName");
+
+  if(homeName){
+    homeName.textContent =
+      firstName || "User";
+  }
+
+
+  /* PROFILE NAME */
+
+  const profileName =
+    document.getElementById("profileName");
+
+  if(profileName){
+    profileName.textContent =
+      fullName;
+  }
+
+
+  /* PROFILE USERNAME */
+
+  const profileUsername =
+    document.getElementById("profileUsername");
+
+  if(profileUsername){
+    profileUsername.textContent =
+      username;
+  }
+
+
+  /* FIRST NAME */
+
+  const firstNameBox =
+    document.getElementById("firstName");
+
+  if(firstNameBox){
+    firstNameBox.textContent =
+      firstName || "—";
+  }
+
+
+  /* LAST NAME */
+
+  const lastNameBox =
+    document.getElementById("lastName");
+
+  if(lastNameBox){
+    lastNameBox.textContent =
+      lastName || "—";
+  }
+
+
+  /* USERNAME */
+
+  const usernameBox =
+    document.getElementById("username");
+
+  if(usernameBox){
+    usernameBox.textContent =
+      username;
+  }
+
+
+  /* TELEGRAM ID */
+
+  const userIdBox =
+    document.getElementById("telegramId");
+
+  if(userIdBox){
+    userIdBox.textContent =
+      userId;
+  }
+
+}
+
+loadTelegramProfile();
